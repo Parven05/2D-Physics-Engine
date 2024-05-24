@@ -1,2 +1,2 @@
 # Elastic-Collision-SFML
-C++ Elastic Collision Simulation using SFML library
+C++ Elastic collision simulation using SFML library
