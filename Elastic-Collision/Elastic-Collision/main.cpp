@@ -8,48 +8,45 @@ class Circle
 {
 private:
 
-    const float speed = 30;
+    const float speed = 80;
     const float mass = 0.5;
     const float time = 30;
 
 public:
 
     sf::CircleShape circle;
+    sf::Vector2f velocity;
 
-    Circle(float radius, sf::Vector2f position)
+    Circle(float radius, sf::Vector2f position, sf::Vector2f initialVelocity)
     {
         circle.setRadius(radius);
         circle.setPosition(position);
+        this->velocity = initialVelocity;
     }
 
-    sf::Vector2f GetPosition()
+    sf::Vector2f GetPosition() const
     {
         return circle.getPosition();
     }
 
-    void ReadPosition() const
+    sf::Vector2f GetVelocity() const
     {
-        sf::Vector2f position = circle.getPosition();
-        std::cout << position.x << position.y << std::endl;
+        return velocity;
+    }
+
+    void SetVelocity(sf::Vector2f newVelocity)
+    {
+        velocity = newVelocity;
+    }
+
+    void UpdatePosition()
+    {
+        circle.move(velocity * speed / time);
     }
 
     float GetRadius()
     {
         return circle.getRadius();
-    }
-
-    sf::Vector2f Velocity(sf::Vector2f direction)
-    {
-        sf::Vector2f velocity = speed * direction / time;
-        circle.move(velocity);
-        return velocity;
-    }
-
-    sf::Vector2f Momentum(sf::Vector2f direction)
-    {
-        sf::Vector2f momentum = mass * Velocity(direction);
-        circle.move(momentum);
-        return momentum;
     }
 
     sf::Color SetColor(sf::Color color)
@@ -70,7 +67,8 @@ class CircleCollision
 public:
     float GetDistance(Circle A, Circle B);
     float TotalRadius(Circle A, Circle B);
-    bool WindowCollision(Circle x);
+    bool WindowCollision(Circle& x, sf::RenderWindow& window) const;
+    bool ElasticCollision(CircleCollision& c, Circle& a, Circle& b) const;
 
 };
 
@@ -85,17 +83,63 @@ float CircleCollision::TotalRadius(Circle A, Circle B)
     float totalRadius = A.GetRadius() + B.GetRadius();
     return totalRadius;
 }
-bool CircleCollision::WindowCollision(Circle i)
+
+bool CircleCollision::WindowCollision(Circle& i, sf::RenderWindow& window) const
 {
-    if (i.GetPosition().x + i.GetRadius() > 500 || //Width - RIGHT
-        i.GetPosition().x - i.GetRadius() < 0 ||   //0 - LEFT
-        i.GetPosition().y + i.GetRadius() > 500 || //Height - TOP
-        i.GetPosition().y - i.GetRadius() < 0)     //0 - BOTTOM
+    sf::Vector2f position = i.GetPosition();
+    float radius = i.GetRadius();
+    sf::Vector2f velocity = i.GetVelocity();
+
+    bool collision = false;
+
+    if (position.x - radius < 0 || position.x + radius > window.getSize().x)
     {
-        return true;
+        velocity.x = -velocity.x;
+        collision = true;
+    }
+    if (position.y - radius < 0 || position.y + radius > window.getSize().y)
+    {
+        velocity.y = -velocity.y;
+        collision = true;
+    }
+    
+    if (collision)
+    {
+        i.SetVelocity(velocity);
     }
 
-    return false;
+    return collision;
+}
+
+bool CircleCollision::ElasticCollision(CircleCollision& c, Circle& a, Circle& b) const
+{
+    float distance = c.GetDistance(a,b);
+    float totalRadius = c.TotalRadius(a,b);
+    sf::Vector2f velocityA = a.GetVelocity();
+    sf::Vector2f velocityB = b.GetVelocity();
+
+    bool collision = true;
+
+    if (distance < totalRadius)
+    {
+        // Ball A
+        velocityA.x = -velocityA.x;
+        velocityA.y = -velocityA.y;
+
+        // Ball B
+        velocityB.x = -velocityB.x;
+        velocityB.y = -velocityB.y;
+
+        collision = true;   
+    }
+
+    if (collision)
+    {
+        a.SetVelocity(velocityA);
+        b.SetVelocity(velocityB);
+    }
+
+    return collision;
 }
 
 int main()
@@ -111,45 +155,29 @@ int main()
     window.setFramerateLimit(60);
 
     ///----------------------------------------------------------------------------------------------------
-
-    // First Ball
-    Circle ball_A(20, sf::Vector2f(20, 20));
-    float ball_A_Radius = ball_A.GetRadius();
-    sf::Vector2f ball_A_Position = ball_A.GetPosition();
-
-    // Second Ball
-    Circle ball_B(20, sf::Vector2f(40, 40));
-    float ball_B_Radius = ball_B.GetRadius();
-    sf::Vector2f ball_B_Position = ball_B.GetPosition();
+    
+    Circle ball_A(20, sf::Vector2f(100,100), sf::Vector2f(1,0));          // First Ball
+    Circle ball_B(20, sf::Vector2f(100, 300), sf::Vector2f(0, 1));        // Second Ball
+    
 
     while (window.isOpen())
     {
-
-        ball_A.Velocity(sf::Vector2f(1, 0));
-        ball_B.Velocity(sf::Vector2f(0, 1));
-
-        //ball_A.Momentum(x);
-        //ball_B.Momentum(y);
+        ball_A.UpdatePosition();
+        ball_B.UpdatePosition();
 
         CircleCollision collision;
         //Circle Collision each other
-        if (collision.GetDistance(ball_A, ball_B) < collision.TotalRadius(ball_A, ball_B))
+        if (collision.ElasticCollision(collision, ball_A, ball_B))
         {
-            std::cout << "Collision" << std::endl;
+            sf::Color color;
+            ball_A.SetColor(color.Yellow);
+            ball_B.SetColor(color.Green);
         }
-        else
-        {
-            std::cout << "Not Collision" << std::endl;
-        }
+
         //Circle Collision windows
-        if (collision.WindowCollision(ball_A) || collision.WindowCollision(ball_B) == true)
+        if (collision.WindowCollision(ball_A, window) || collision.WindowCollision(ball_B, window))
         {
             std::cout << "Window Detected" << std::endl;
-            sf::Color color;
-
-            ball_A.SetColor(color.Cyan);
-            ball_B.SetColor(color.Cyan);
-
         }
 
         sf::Event event;
