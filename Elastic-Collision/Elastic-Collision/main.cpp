@@ -21,6 +21,7 @@ public:
     {
         circle.setRadius(radius);
         circle.setPosition(position);
+        circle.setOrigin(radius, radius);
         this->velocity = initialVelocity;
     }
 
