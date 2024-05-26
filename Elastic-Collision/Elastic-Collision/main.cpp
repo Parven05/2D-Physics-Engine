@@ -2,7 +2,9 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <vector>
 #include <string>
+#include <algorithm>
 
 class Circle
 {
@@ -35,6 +37,11 @@ public:
         return velocity;
     }
 
+    float GetRadius() const
+    {
+        return circle.getRadius();
+    }
+
     void SetVelocity(sf::Vector2f newVelocity)
     {
         velocity = newVelocity;
@@ -43,11 +50,6 @@ public:
     void UpdatePosition()
     {
         circle.move(velocity * speed / time);
-    }
-
-    float GetRadius()
-    {
-        return circle.getRadius();
     }
 
     sf::Color SetColor(sf::Color color)
@@ -145,40 +147,61 @@ bool CircleCollision::ElasticCollision(CircleCollision& c, Circle& a, Circle& b)
 
 int main()
 {
+
     // Settings
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
 
     // Window
     sf::RenderWindow window;
-    window.create(sf::VideoMode(500, 500), "Click Game", sf::Style::Titlebar | sf::Style::Close, settings);
+
+    window.create(sf::VideoMode(800, 800), "Click Game", sf::Style::Titlebar | sf::Style::Close, settings);
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(60);
 
     ///----------------------------------------------------------------------------------------------------
-    
-    Circle ball_A(20, sf::Vector2f(100,100), sf::Vector2f(1,0));          // First Ball
-    Circle ball_B(20, sf::Vector2f(100, 300), sf::Vector2f(0, 1));        // Second Ball
-    
+
+    int totalBalls = 200;
+
+    std::vector<Circle> balls;
+    for (int i = 0; i < totalBalls; i++)
+    {
+        float radius = static_cast<float>(rand() % (20 - 10 + 1) + 10);
+        sf::Vector2f position;
+        position.x = static_cast<float>(rand() % window.getSize().x);
+        position.y = static_cast<float>(rand() % window.getSize().y);
+        sf::Vector2f velocity;
+        velocity.x = rand() % (2 - 1 + 1) + 1;
+        velocity.y = rand() % (2 - 1 + 1) + 1;
+        balls.emplace_back(radius, position, velocity);
+
+    }
 
     while (window.isOpen())
     {
-        ball_A.UpdatePosition();
-        ball_B.UpdatePosition();
 
-        CircleCollision collision;
-        //Circle Collision each other
-        if (collision.ElasticCollision(collision, ball_A, ball_B))
+       for (auto& ball : balls)
+       {
+            ball.UpdatePosition();
+       }
+
+       CircleCollision collision;
+
+       //Circle Collision each other
+      /*  if (collision.ElasticCollision(collision, ball_A, ball_B))
         {
             sf::Color color;
             ball_A.SetColor(color.Yellow);
             ball_B.SetColor(color.Green);
-        }
+        }*/
 
-        //Circle Collision windows
-        if (collision.WindowCollision(ball_A, window) || collision.WindowCollision(ball_B, window))
+        // Circle Collision windows
+        for (auto& ball : balls)
         {
-            std::cout << "Window Detected" << std::endl;
+            if (collision.WindowCollision(ball, window))
+            {
+                std::cout << "Window Detected" << std::endl;
+            }
         }
 
         sf::Event event;
@@ -190,9 +213,15 @@ int main()
 
         window.clear(sf::Color(0, 0, 0));
 
-        ball_A.DrawCircle(window);
-        ball_B.DrawCircle(window);
+        std::srand(std::time(nullptr));
 
+        for (auto& ball : balls)
+        {
+            sf::Color randomColor(std::rand() % 256, std::rand() % 256, std::rand() % 256);
+            ball.SetColor(randomColor);
+            ball.DrawCircle(window);
+
+        }
         window.display();
     }
     return 0;
