@@ -1,3 +1,7 @@
+![Status](https://badgen.net/badge/Status/Development/red?icon=github)
+![Source](https://badgen.net/badge/Tool/SFML/yellow)
+![License](https://badgen.net/badge/license/MIT/green)
+
 # 2D-Physics-Engine-SFML
 C++ 2D Physics Engine built with SFML library
 
