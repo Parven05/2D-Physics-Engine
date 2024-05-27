@@ -92,6 +92,7 @@ public:
 float CircleCollision::GetDistance(Circle A, Circle B)
 {
     float distance = sqrt(pow(B.GetPosition().x - A.GetPosition().x, 2) + pow(B.GetPosition().y - A.GetPosition().y, 2));
+
     return distance;
 }
 
@@ -133,8 +134,16 @@ bool CircleCollision::ElasticCollision(CircleCollision& c, Circle& a, Circle& b,
     float distance = c.GetDistance(a, b);
     float totalRadius = c.TotalRadius(a, b);
 
+   /* // Calculate positions of circles a and b
+    sf::Vector2f positionA = a.GetPosition();
+    sf::Vector2f positionB = b.GetPosition();
+
+    // Draw the line representing the distance between circles a and b
+    a.DrawLine(window, positionA, positionB, sf::Color::Yellow);*/
+
     if (distance < totalRadius)
     {
+        
 
         // Normal Vector
         sf::Vector2f normal = (b.GetPosition() - a.GetPosition()) / distance;
@@ -185,7 +194,7 @@ int main()
 
     ///----------------------------------------------------------------------------------------------------
 
-    int totalBalls = 10;
+    int totalBalls = 20;
 
     std::vector<Circle> balls;
     for (int i = 0; i < totalBalls; i++)
