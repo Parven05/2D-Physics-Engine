@@ -42,6 +42,11 @@ public:
         return circle.getRadius();
     }
 
+    float GetMass() const
+    {
+        return mass;
+    }
+
     void SetVelocity(sf::Vector2f newVelocity)
     {
         velocity = newVelocity;
@@ -72,7 +77,6 @@ public:
     float TotalRadius(Circle A, Circle B);
     bool WindowCollision(Circle& x, sf::RenderWindow& window) const;
     bool ElasticCollision(CircleCollision& c, Circle& a, Circle& b) const;
-
 };
 
 float CircleCollision::GetDistance(Circle A, Circle B)
@@ -116,33 +120,29 @@ bool CircleCollision::WindowCollision(Circle& i, sf::RenderWindow& window) const
 
 bool CircleCollision::ElasticCollision(CircleCollision& c, Circle& a, Circle& b) const
 {
-    float distance = c.GetDistance(a,b);
+    float distance = c.GetDistance(a, b);
     float totalRadius = c.TotalRadius(a,b);
-    sf::Vector2f velocityA = a.GetVelocity();
-    sf::Vector2f velocityB = b.GetVelocity();
-
-    bool collision = true;
 
     if (distance < totalRadius)
     {
-        // Ball A
-        velocityA.x = -velocityA.x;
-        velocityA.y = -velocityA.y;
+        // Relative Velocity
+        sf::Vector2f relativeVelocity = b.GetVelocity() - a.GetVelocity();
 
-        // Ball B
-        velocityB.x = -velocityB.x;
-        velocityB.y = -velocityB.y;
+        // Normal Vector
+        sf::Vector2 normal = (b.GetPosition() - a.GetPosition()) / distance;
 
-        collision = true;   
+        // Impulse along normal 
+        float impluse = 2.0f * (relativeVelocity.x * normal.x + relativeVelocity.y * normal.y) / (a.GetMass() + b.GetMass());
+
+        // Update Velocity
+        a.SetVelocity(a.GetVelocity() + impluse * b.GetMass() * normal);
+        b.SetVelocity(b.GetVelocity() - impluse * a.GetMass() * normal);
+
+        return true;
+
     }
 
-    if (collision)
-    {
-        a.SetVelocity(velocityA);
-        b.SetVelocity(velocityB);
-    }
-
-    return collision;
+    return false;
 }
 
 int main()
@@ -161,7 +161,7 @@ int main()
 
     ///----------------------------------------------------------------------------------------------------
 
-    int totalBalls = 200;
+    int totalBalls = 100;
 
     std::vector<Circle> balls;
     for (int i = 0; i < totalBalls; i++)
@@ -187,14 +187,17 @@ int main()
 
        CircleCollision collision;
 
-       //Circle Collision each other
-      /*  if (collision.ElasticCollision(collision, ball_A, ball_B))
-        {
-            sf::Color color;
-            ball_A.SetColor(color.Yellow);
-            ball_B.SetColor(color.Green);
-        }*/
-
+        for (auto& ball1 : balls)
+       {
+           for (auto& ball2 : balls)
+           {
+               if (&ball1 != &ball2)
+               {
+                   collision.ElasticCollision(collision, ball1, ball2);
+               };
+           }
+       }
+      
         // Circle Collision windows
         for (auto& ball : balls)
         {
