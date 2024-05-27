@@ -10,7 +10,7 @@ class Circle
 {
 private:
 
-    const float speed = 80;
+    const float speed = 50;
     const float mass = 0.5;
     const float time = 30;
 
@@ -52,9 +52,9 @@ public:
         velocity = newVelocity;
     }
 
-    void UpdatePosition()
+    void UpdatePosition(float dt)
     {
-        circle.move(velocity * speed / time);
+        circle.move(velocity * speed * dt / time);
     }
 
     sf::Color SetColor(sf::Color color)
@@ -68,6 +68,16 @@ public:
         window.draw(circle);
     }
 
+    void DrawLine(sf::RenderWindow& window, sf::Vector2f start, sf::Vector2f end, sf::Color color) const
+    {
+        sf::Vertex line[] =
+        {
+            sf::Vertex(start, color),
+            sf::Vertex(end, color)
+        };
+        window.draw(line, 2, sf::Lines);
+    }
+
 };
 
 class CircleCollision
@@ -76,7 +86,7 @@ public:
     float GetDistance(Circle A, Circle B);
     float TotalRadius(Circle A, Circle B);
     bool WindowCollision(Circle& x, sf::RenderWindow& window) const;
-    bool ElasticCollision(CircleCollision& c, Circle& a, Circle& b) const;
+    bool ElasticCollision(CircleCollision& c, Circle& a, Circle& b, float restitution, sf::RenderWindow& window) const;
 };
 
 float CircleCollision::GetDistance(Circle A, Circle B)
@@ -118,31 +128,45 @@ bool CircleCollision::WindowCollision(Circle& i, sf::RenderWindow& window) const
     return collision;
 }
 
-bool CircleCollision::ElasticCollision(CircleCollision& c, Circle& a, Circle& b) const
+bool CircleCollision::ElasticCollision(CircleCollision& c, Circle& a, Circle& b, float restitution, sf::RenderWindow& window) const
 {
     float distance = c.GetDistance(a, b);
-    float totalRadius = c.TotalRadius(a,b);
+    float totalRadius = c.TotalRadius(a, b);
 
     if (distance < totalRadius)
     {
-        // Relative Velocity
-        sf::Vector2f relativeVelocity = b.GetVelocity() - a.GetVelocity();
 
         // Normal Vector
-        sf::Vector2 normal = (b.GetPosition() - a.GetPosition()) / distance;
+        sf::Vector2f normal = (b.GetPosition() - a.GetPosition()) / distance;
 
-        // Impulse along normal 
-        float impluse = 2.0f * (relativeVelocity.x * normal.x + relativeVelocity.y * normal.y) / (a.GetMass() + b.GetMass());
+        // Velocities along the normal
+        float v1Normal = a.GetVelocity().x * normal.x + a.GetVelocity().y * normal.y;
+        float v2Normal = b.GetVelocity().x * normal.x + b.GetVelocity().y * normal.y;
 
-        // Update Velocity
-        a.SetVelocity(a.GetVelocity() + impluse * b.GetMass() * normal);
-        b.SetVelocity(b.GetVelocity() - impluse * a.GetMass() * normal);
+        // Using the provided formulas to compute new velocities
+        float v1PrimeNormal = (a.GetMass() * v1Normal + b.GetMass() * v2Normal - b.GetMass() * (v1Normal - v2Normal) * restitution) / (a.GetMass() + b.GetMass());
+        float v2PrimeNormal = (a.GetMass() * v1Normal + b.GetMass() * v2Normal - a.GetMass() * (v2Normal - v1Normal) * restitution) / (a.GetMass() + b.GetMass());
+
+        // Update velocities along the normal
+        sf::Vector2f v1Prime = a.GetVelocity() + (v1PrimeNormal - v1Normal) * normal;
+        sf::Vector2f v2Prime = b.GetVelocity() + (v2PrimeNormal - v2Normal) * normal;
+
+        // Set new velocities
+        a.SetVelocity(v1Prime);
+        b.SetVelocity(v2Prime);
+
+        sf::Vector2f primeEnd = a.GetPosition() + v1Prime * 100.0f;
+        a.DrawLine(window, a.GetPosition(), primeEnd, sf::Color::White);
+
+        // Draw the normal vector for circle a
+        sf::Vector2f normalEnd = a.GetPosition() + normal * 100.0f; // Scale the normal for visibility
+        a.DrawLine(window, a.GetPosition(), normalEnd, sf::Color::Blue);
 
         return true;
-
     }
 
     return false;
+
 }
 
 int main()
@@ -161,12 +185,12 @@ int main()
 
     ///----------------------------------------------------------------------------------------------------
 
-    int totalBalls = 100;
+    int totalBalls = 10;
 
     std::vector<Circle> balls;
     for (int i = 0; i < totalBalls; i++)
     {
-        float radius = static_cast<float>(rand() % (20 - 10 + 1) + 10);
+        float radius = static_cast<float>(rand() % (30 - 10 + 1) + 10);
         sf::Vector2f position;
         position.x = static_cast<float>(rand() % window.getSize().x);
         position.y = static_cast<float>(rand() % window.getSize().y);
@@ -177,15 +201,23 @@ int main()
 
     }
 
+
     while (window.isOpen())
     {
 
-       for (auto& ball : balls)
+       const int numSteps = 20;
+       const float dt = 1.0f / numSteps;
+
+       for (int step = 0; step < numSteps; ++step)
        {
-            ball.UpdatePosition();
-       }
+           for (auto& ball : balls)
+           {
+                ball.UpdatePosition(dt);
+           }
+        }
 
        CircleCollision collision;
+       window.clear(sf::Color(0, 0, 0));
 
         for (auto& ball1 : balls)
        {
@@ -193,7 +225,7 @@ int main()
            {
                if (&ball1 != &ball2)
                {
-                   collision.ElasticCollision(collision, ball1, ball2);
+                   collision.ElasticCollision(collision, ball1, ball2, 1.0f, window);
                };
            }
        }
@@ -213,8 +245,7 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-
-        window.clear(sf::Color(0, 0, 0));
+        
 
         std::srand(std::time(nullptr));
 
@@ -223,7 +254,6 @@ int main()
             sf::Color randomColor(std::rand() % 256, std::rand() % 256, std::rand() % 256);
             ball.SetColor(randomColor);
             ball.DrawCircle(window);
-
         }
         window.display();
     }
