@@ -120,7 +120,7 @@ bool CircleCollision::WindowCollision(Circle& i, sf::RenderWindow& window) const
         velocity.y = -velocity.y;
         collision = true;
     }
-    
+
     if (collision)
     {
         i.SetVelocity(velocity);
@@ -134,16 +134,16 @@ bool CircleCollision::ElasticCollision(CircleCollision& c, Circle& a, Circle& b,
     float distance = c.GetDistance(a, b);
     float totalRadius = c.TotalRadius(a, b);
 
-   /* // Calculate positions of circles a and b
-    sf::Vector2f positionA = a.GetPosition();
-    sf::Vector2f positionB = b.GetPosition();
+    /* // Calculate positions of circles a and b
+     sf::Vector2f positionA = a.GetPosition();
+     sf::Vector2f positionB = b.GetPosition();
 
-    // Draw the line representing the distance between circles a and b
-    a.DrawLine(window, positionA, positionB, sf::Color::Yellow);*/
+     // Draw the line representing the distance between circles a and b
+     a.DrawLine(window, positionA, positionB, sf::Color::Yellow);*/
 
     if (distance < totalRadius)
     {
-        
+
 
         // Normal Vector
         sf::Vector2f normal = (b.GetPosition() - a.GetPosition()) / distance;
@@ -214,31 +214,31 @@ int main()
     while (window.isOpen())
     {
 
-       const int numSteps = 20;
-       const float dt = 1.0f / numSteps;
+        const int numSteps = 20;
+        const float dt = 1.0f / numSteps;
 
-       for (int step = 0; step < numSteps; ++step)
-       {
-           for (auto& ball : balls)
-           {
+        for (int step = 0; step < numSteps; ++step)
+        {
+            for (auto& ball : balls)
+            {
                 ball.UpdatePosition(dt);
-           }
+            }
         }
 
-       CircleCollision collision;
-       window.clear(sf::Color(0, 0, 0));
+        CircleCollision collision;
+        window.clear(sf::Color(0, 0, 0));
 
         for (auto& ball1 : balls)
-       {
-           for (auto& ball2 : balls)
-           {
-               if (&ball1 != &ball2)
-               {
-                   collision.ElasticCollision(collision, ball1, ball2, 1.0f, window);
-               };
-           }
-       }
-      
+        {
+            for (auto& ball2 : balls)
+            {
+                if (&ball1 != &ball2)
+                {
+                    collision.ElasticCollision(collision, ball1, ball2, 1.0f, window);
+                };
+            }
+        }
+
         // Circle Collision windows
         for (auto& ball : balls)
         {
@@ -254,7 +254,7 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        
+
 
         std::srand(std::time(nullptr));
 
