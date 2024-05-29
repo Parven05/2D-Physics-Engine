@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include "./vector2.h"
 #include "./object.h"
+#include "imgui.h"
+#include "imgui-SFML.h"
 
 int main()
 {
