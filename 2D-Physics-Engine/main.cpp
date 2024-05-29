@@ -1,11 +1,7 @@
 #include <iostream>
-#include <string>
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 #define VECTOR2_H
-#define PARTICLE_H
-#include "./vector2.h";
-#include "./particle.h"
+#include "./vector2.h"
 
 int main()
 {
@@ -15,17 +11,16 @@ int main()
 
     // Window
     sf::RenderWindow window;
-    window.create(sf::VideoMode(500, 500), "Click Game", sf::Style::Titlebar | sf::Style::Close, settings);
+    window.create(sf::VideoMode(500, 500), "2D Physics Engine", sf::Style::Titlebar | sf::Style::Close, settings);
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(60);
 
-
-    Vector2 initialPos = Vector2(100,200);
-    Vector2 velocity = Vector2(0,1);
-    Particle particle(initialPos, velocity);
+    sf::Clock clock;
 
     while (window.isOpen())
     {
+        float deltaTime = clock.restart().asSeconds();
+
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -34,8 +29,6 @@ int main()
         }
 
         window.clear(sf::Color(0, 0, 0));
-
-        particle.Draw(window);
 
         window.display();
     }
