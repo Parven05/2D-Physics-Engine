@@ -19,6 +19,13 @@ Vector2 Vector2::scaleSub(Vector2 v, float s)
 	return Vector2(x, y);
 }
 
+Vector2 Vector2::scaleDivide(Vector2 v, float s)
+{
+	x /= v.x * s;
+	y /= v.y * s;
+	return Vector2(x, y);
+}
+
 Vector2 Vector2::addVector(Vector2 v, Vector2 w)
 {
 	x = v.x + w.x;
