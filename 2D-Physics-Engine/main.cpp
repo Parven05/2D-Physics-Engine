@@ -5,6 +5,27 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 
+void initializeBalls(std::vector<Object>& balls, int totalBalls, sf::RenderWindow& window) {
+    balls.clear();
+    for (int i = 0; i < totalBalls; ++i)
+    {
+        float radius = static_cast<float>(rand() % (30 - 10 + 1) + 10);
+        float mass = static_cast<float>(rand() % (5 - 2 + 1) + 5);
+
+        sf::Vector2f position;
+        position.x = static_cast<float>(rand() % window.getSize().x);
+        position.y = static_cast<float>(rand() % window.getSize().y);
+
+        sf::Vector2f velocity;
+        velocity.x = rand() % (200 - 100 + 1) + 100;
+        velocity.y = rand() % (200 - 100 + 1) + 100;
+
+        Object ball(radius, mass, Vector2(position.x, position.y), Vector2(velocity.x, velocity.y));
+
+        balls.emplace_back(ball);
+    }
+}
+
 int main()
 {
     // Settings
@@ -13,9 +34,11 @@ int main()
 
     // Window
     sf::RenderWindow window;
-    window.create(sf::VideoMode(500, 500), "2D Physics Engine", sf::Style::Titlebar | sf::Style::Close, settings);
+    window.create(sf::VideoMode(800, 800), "2D Physics Engine", sf::Style::Titlebar | sf::Style::Close, settings);
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(60);
+    ImGui::SFML::Init(window);
+
 
     int totalBalls = 20;
 
@@ -24,21 +47,7 @@ int main()
     sf::Vector2f velocity;
 
     std::vector<Object>balls;
-    for (int i = 0; i < totalBalls; ++i)
-    {
-        float radius = static_cast<float>(rand() % (30 - 10 + 1) + 10);
-        float mass = static_cast<float>(rand() % (5 - 2 + 1) + 5);
-
-        position.x = static_cast<float>(rand() % window.getSize().x);
-        position.y = static_cast<float>(rand() % window.getSize().y);
-        
-        velocity.x = rand() % (200 - 100 + 100) + 100;
-        velocity.y = rand() % (200 - 100 + 100) + 100;
-
-        Object ball(radius, mass, Vector2(position.x, position.y), Vector2(velocity.x, velocity .y));
-
-        balls.emplace_back(ball);
-    }
+    initializeBalls(balls, totalBalls, window);
 
     sf::Clock clock;
 
@@ -55,9 +64,27 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
+            ImGui::SFML::ProcessEvent(event);
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+        ImGui::SFML::Update(window, sf::milliseconds(static_cast<int>(deltaTime * 1000)));
+
+        // IMGUI window;
+        ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(280, 180), ImGuiCond_Once);
+        ImGui::Begin("Dynamic Controller", nullptr, ImGuiWindowFlags_NoResize);
+        ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
+        ImGui::Text("Adjust Simulation Parameters");
+        ImGui::SliderFloat("Damping", &Object::damping, 0.0f, 200.0f);
+        ImGui::SliderFloat("Gravity Y", &Object::gravity.y, 0.0f, 400.0f);
+        ImGui::Spacing();
+        ImGui::SliderInt("Balls", &totalBalls, 1, 200);
+        if (ImGui::Button("Restart Simulation"))
+        {
+            initializeBalls(balls, totalBalls, window);
+        }
+        ImGui::End();
 
         window.clear(sf::Color(0, 0, 0));
 
@@ -76,9 +103,10 @@ int main()
         }
 
    
-
+        ImGui::SFML::Render(window);
         window.display();
     }
 
+    ImGui::SFML::Shutdown();
     return 0;
 }

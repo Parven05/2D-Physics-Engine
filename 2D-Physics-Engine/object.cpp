@@ -2,14 +2,15 @@
 #include "./object.h"
 #include <iostream>
 
+float Object::damping = 50.0f;
+Vector2 Object::gravity = Vector2(0, 100);
+
 Object::Object(float r, float m, Vector2 pos, Vector2 v)
 	: radius(r), mass(m), position(pos), velocity(v) {}
 
 void Object::Simulate(float dt)
 {
-	Vector2 gravity = Vector2(0, 100);
 	Vector2 force = Vector2(0, mass * gravity.y);
-	float damping = 50.0f;
 
 	velocity.y += force.y * dt;
 	velocity.x += force.x * dt;
