@@ -1,5 +1,6 @@
 #define OBJECT_H
 #include "./object.h"
+#include <iostream>
 
 Object::Object(float r, float m, Vector2 pos, Vector2 v)
 	: radius(r), mass(m), position(pos), velocity(v) {}

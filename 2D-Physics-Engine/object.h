@@ -11,7 +11,7 @@ public:
 	float radius;
 	Vector2 position;
 	Vector2 velocity;
-	Object(float r, float m,Vector2 pos, Vector2 v);
+	Object(float r, float m, Vector2 pos, Vector2 v);
 	void Simulate(float dt);
 	void WindowCollision(sf::RenderWindow& window);
 

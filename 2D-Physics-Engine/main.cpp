@@ -15,11 +15,28 @@ int main()
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(60);
 
-    sf::CircleShape ballShape;
-    Object ball(20, 5, Vector2(100,100), Vector2(300, 300));
-    ballShape.setOrigin(ball.radius, ball.radius);
-    ballShape.setRadius(ball.radius);
+    int totalBalls = 20;
 
+    sf::CircleShape ballShape;
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+
+    std::vector<Object>balls;
+    for (int i = 0; i < totalBalls; ++i)
+    {
+        float radius = static_cast<float>(rand() % (30 - 10 + 1) + 10);
+        float mass = static_cast<float>(rand() % (5 - 2 + 1) + 5);
+
+        position.x = static_cast<float>(rand() % window.getSize().x);
+        position.y = static_cast<float>(rand() % window.getSize().y);
+        
+        velocity.x = rand() % (200 - 100 + 100) + 100;
+        velocity.y = rand() % (200 - 100 + 100) + 100;
+
+        Object ball(radius, mass, Vector2(position.x, position.y), Vector2(velocity.x, velocity .y));
+
+        balls.emplace_back(ball);
+    }
 
     sf::Clock clock;
 
@@ -27,8 +44,11 @@ int main()
     {
         float deltaTime = clock.restart().asSeconds();
 
-        ball.Simulate(deltaTime);
-        ball.WindowCollision(window);
+        for (auto& ball : balls)
+        {
+            ball.Simulate(deltaTime);
+            ball.WindowCollision(window);
+        }
 
         sf::Event event;
         while (window.pollEvent(event))
@@ -40,7 +60,20 @@ int main()
         window.clear(sf::Color(0, 0, 0));
 
         window.draw(ballShape);
-        ballShape.setPosition(ball.position.x, ball.position.y);
+
+        std::srand(std::time(nullptr));
+
+        for (auto& ball : balls)
+        {
+            sf::Color randomColor(std::rand() % 256, std::rand() % 256, std::rand() % 256);
+            ballShape.setOrigin(ball.radius, ball.radius);
+            ballShape.setRadius(ball.radius);
+            ballShape.setFillColor(randomColor);
+            ballShape.setPosition(ball.position.x, ball.position.y);
+            window.draw(ballShape);
+        }
+
+   
 
         window.display();
     }
