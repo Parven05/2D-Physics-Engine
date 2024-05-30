@@ -16,9 +16,10 @@ public:
 	Vector2 addVector(Vector2 v, Vector2 w);
 	Vector2 subVector(Vector2 v, Vector2 w);
 	Vector2 scalarMultiVector(Vector2 v, float lambda);
-	void scaleVector(float lambda);
+	Vector2 scaleVector(float lambda);
 	float Magnitude();
 	float DotProduct(Vector2 v);
+	Vector2 Normalize();
 };
 
 #endif

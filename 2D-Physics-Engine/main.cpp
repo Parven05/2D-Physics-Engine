@@ -10,7 +10,6 @@ void initializeBalls(std::vector<Object>& balls, int totalBalls, sf::RenderWindo
     for (int i = 0; i < totalBalls; ++i)
     {
         float radius = static_cast<float>(rand() % (30 - 10 + 1) + 10);
-        float mass = static_cast<float>(rand() % (5 - 2 + 1) + 5);
 
         sf::Vector2f position;
         position.x = static_cast<float>(rand() % window.getSize().x);
@@ -20,7 +19,7 @@ void initializeBalls(std::vector<Object>& balls, int totalBalls, sf::RenderWindo
         velocity.x = rand() % (200 - 100 + 1) + 100;
         velocity.y = rand() % (200 - 100 + 1) + 100;
 
-        Object ball(radius, mass, Vector2(position.x, position.y), Vector2(velocity.x, velocity.y));
+        Object ball(radius, Vector2(position.x, position.y), Vector2(velocity.x, velocity.y));
 
         balls.emplace_back(ball);
     }
@@ -40,7 +39,7 @@ int main()
     ImGui::SFML::Init(window);
 
 
-    int totalBalls = 20;
+    int totalBalls = 2;
 
     sf::CircleShape ballShape;
     sf::Vector2f position;
@@ -51,6 +50,9 @@ int main()
 
     sf::Clock clock;
 
+    bool resetValues = false;
+    bool enableGravityX = false;
+
     while (window.isOpen())
     {
         float deltaTime = clock.restart().asSeconds();
@@ -59,6 +61,15 @@ int main()
         {
             ball.Simulate(deltaTime);
             ball.WindowCollision(window);
+
+            for (auto& balli : balls)
+            {
+                if (&ball != &balli)
+                {
+                    ball.CircleCollision(balli);
+                }
+            }
+            
         }
 
         sf::Event event;
@@ -72,18 +83,49 @@ int main()
 
         // IMGUI window;
         ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiCond_Once);
-        ImGui::SetNextWindowSize(ImVec2(280, 180), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(280, 260), ImGuiCond_Once);
         ImGui::Begin("Dynamic Controller", nullptr, ImGuiWindowFlags_NoResize);
         ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
         ImGui::Text("Adjust Simulation Parameters");
         ImGui::SliderFloat("Damping", &Object::damping, 0.0f, 200.0f);
-        ImGui::SliderFloat("Gravity Y", &Object::gravity.y, 0.0f, 400.0f);
-        ImGui::Spacing();
+        ImGui::Checkbox("Enable Gravity X", &enableGravityX);
+
+        if (enableGravityX) {
+            Object::gravity.x = 0.0f;
+            ImGui::SliderFloat("Gravity X", &Object::gravity.x, -200.0f, 200.0f);
+        }
+
+        ImGui::SliderFloat("Gravity Y", &Object::gravity.y, -200.0f, 200.0f);
+        ImGui::SliderFloat("Mass", &Object::mass, 0.0f, 30.0f);
+        ImGui::SliderFloat("Restitution", &Object::restitution, 0.0f, 1.0f);
         ImGui::SliderInt("Balls", &totalBalls, 1, 200);
-        if (ImGui::Button("Restart Simulation"))
+
+        ImGui::BeginGroup();
+       
+        if (ImGui::Button("Reset Values"))
+        {
+            resetValues = true;
+        }
+
+        if (resetValues) {
+            Object::damping = 0.0f;
+            Object::gravity.x = 0.0f;
+            Object::gravity.y = 0.0f;
+            Object::mass = 5;
+            Object::restitution = 1.0f;
+            totalBalls = 2;
+            resetValues = false;
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Reset Simulation"))
         {
             initializeBalls(balls, totalBalls, window);
         }
+        
+        ImGui::EndGroup();
+
         ImGui::End();
 
         window.clear(sf::Color(0, 0, 0));

@@ -7,16 +7,18 @@
 class Object
 {
 public:
-	float mass;
+	static float mass;
 	float radius;
 	Vector2 position;
 	Vector2 velocity;
 	static float damping;
 	static Vector2 gravity;
+	static float restitution;
 
-	Object(float r, float m, Vector2 pos, Vector2 v);
+	Object(float r, Vector2 pos, Vector2 v);
 	void Simulate(float dt);
 	void WindowCollision(sf::RenderWindow& window);
+	void CircleCollision(Object& b);
 
 };
 

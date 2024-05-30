@@ -47,10 +47,12 @@ Vector2 Vector2::scalarMultiVector(Vector2 v, float lambda)
 	return Vector2(x, y);
 }
 
-void Vector2::scaleVector(float lambda)
+
+Vector2 Vector2::scaleVector(float lambda)
 {
 	x *= lambda;
 	y *= lambda;
+	return Vector2(x,y);
 }
 
 float Vector2::Magnitude()
@@ -63,3 +65,13 @@ float Vector2::DotProduct(Vector2 v)
 	return x * v.x + y * v.y;
 }
 
+Vector2 Vector2::Normalize()
+{
+	float mag = std::sqrt(x * x + y * y);
+	if (mag != 0) {
+		return Vector2(x / mag, y / mag);
+	}
+	else {
+		return *this;
+	}
+}
