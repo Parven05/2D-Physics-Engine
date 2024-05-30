@@ -92,11 +92,11 @@ int main()
 
         if (enableGravityX) {
             Object::gravity.x = 0.0f;
-            ImGui::SliderFloat("Gravity X", &Object::gravity.x, -200.0f, 200.0f);
+            ImGui::SliderFloat("Gravity X", &Object::gravity.x, -100.0f, 100.0f);
         }
 
-        ImGui::SliderFloat("Gravity Y", &Object::gravity.y, -200.0f, 200.0f);
-        ImGui::SliderFloat("Mass", &Object::mass, 0.0f, 30.0f);
+        ImGui::SliderFloat("Gravity Y", &Object::gravity.y, -100.0f, 100.0f);
+        ImGui::SliderFloat("Mass", &Object::mass, 0.0f, 15.0f);
         ImGui::SliderFloat("Restitution", &Object::restitution, 0.0f, 1.0f);
         ImGui::SliderInt("Balls", &totalBalls, 1, 200);
 
