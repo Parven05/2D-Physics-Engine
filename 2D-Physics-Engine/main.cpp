@@ -91,7 +91,6 @@ int main()
         ImGui::Checkbox("Enable Gravity X", &enableGravityX);
 
         if (enableGravityX) {
-            Object::gravity.x = 0.0f;
             ImGui::SliderFloat("Gravity X", &Object::gravity.x, -100.0f, 100.0f);
         }
 
