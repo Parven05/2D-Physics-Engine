@@ -2,8 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "imgui.h"
 #include "imgui-SFML.h"
-#include "./vector2.h"
-#include "./object.h"
+#include "./solver.h"
 #include <ctime>
 
 void initializeBalls(std::vector<Object>& balls, int totalBalls, float radius, sf::RenderWindow& window) {
@@ -44,6 +43,7 @@ int main()
     std::vector<Object> balls;
     initializeBalls(balls, totalBalls, radius, window);
 
+    Solver solver;
     sf::Clock clock;
 
     bool resetValues = false;
@@ -61,13 +61,13 @@ int main()
         for (auto& ball : balls)
         {
             ball.Simulate(deltaTime);
-            ball.WindowCollision(window);
+            solver.WindowCollision(window, ball);
 
             for (auto& balli : balls)
             {
                 if (&ball != &balli)
                 {
-                    ball.CircleCollision(balli);
+                    solver.CircleCollision(ball, balli);
                 }
             }
         }

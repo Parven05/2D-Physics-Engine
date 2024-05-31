@@ -17,8 +17,6 @@ public:
 
 	Object(float r, Vector2 pos, Vector2 v);
 	void Simulate(float dt);
-	void WindowCollision(sf::RenderWindow& window);
-	void CircleCollision(Object& b);
 
 };
 
