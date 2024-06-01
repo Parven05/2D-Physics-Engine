@@ -1,7 +1,7 @@
 #define SANDBOX_H
 #include "./sandbox.h"
 
-/*sf::RenderWindow Window()
+sf::RenderWindow Window()
 {
     //settings.antialiasingLevel = 8;
     window.create(sf::VideoMode(800, 800), "2D Physics Engine", sf::Style::Titlebar | sf::Style::Close, settings);

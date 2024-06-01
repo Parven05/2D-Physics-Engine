@@ -1,11 +1,9 @@
 #include <iostream>
-#include <SFML/Graphics.hpp>
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include "./solver.h"
-#include <ctime>
 
-void initializeBalls(std::vector<Object>& balls, int totalBalls, float radius, sf::RenderWindow& window) {
+void initializeBalls(std::vector<Circle>& balls, int totalBalls, float radius, sf::RenderWindow& window) {
     balls.clear();
     for (int i = 0; i < totalBalls; ++i)
     {
@@ -17,7 +15,7 @@ void initializeBalls(std::vector<Object>& balls, int totalBalls, float radius, s
         velocity.x = rand() % (200 - 100 + 1) + 100;
         velocity.y = rand() % (200 - 100 + 1) + 100;
 
-        Object ball(radius, Vector2(position.x, position.y), Vector2(velocity.x, velocity.y));
+        Circle ball(radius, Vector2(position.x, position.y), Vector2(velocity.x, velocity.y));
 
         balls.emplace_back(ball);
     }
@@ -40,7 +38,7 @@ int main()
     float radius = static_cast<float>(rand() % (20 - 10 + 1) + 10);
 
     sf::CircleShape ballShape;
-    std::vector<Object> balls;
+    std::vector<Circle> balls;
     initializeBalls(balls, totalBalls, radius, window);
 
     Solver solver;

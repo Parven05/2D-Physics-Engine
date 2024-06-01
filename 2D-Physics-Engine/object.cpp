@@ -7,8 +7,9 @@ float Object::damping = 0.0f;
 Vector2 Object::gravity = Vector2(0, 0);
 float Object::restitution = 1.0f;
 
-Object::Object(float r, Vector2 pos, Vector2 v)
-	: radius(r), position(pos), velocity(v) {}
+Object::Object(Vector2 pos, Vector2 v)
+	: position(pos), velocity(v) {}
+
 
 void Object::Simulate(float dt)
 {

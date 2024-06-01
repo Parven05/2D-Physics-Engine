@@ -2,7 +2,6 @@
 #define SOLVER_H
 #include "./solver.h"
 
-
 class Sandbox
 {
 public:

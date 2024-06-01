@@ -3,7 +3,7 @@
 #include <cmath>
 #define _sqrt sqrtf
 
-class Vector2
+struct Vector2
 {
 public:
 	float x;

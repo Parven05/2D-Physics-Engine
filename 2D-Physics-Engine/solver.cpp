@@ -1,20 +1,20 @@
 #define SOLVER_H
 #include "./solver.h"
 
-void Solver::WindowCollision(sf::RenderWindow& window, Object& object)
+void Solver::WindowCollision(sf::RenderWindow& window, Circle& circle)
 {
-    if (object.position.x - object.radius < 0 || object.position.x + object.radius > window.getSize().x) {
-        object.position.x = std::clamp(object.position.x, object.radius, window.getSize().x - object.radius);
-        object.velocity.x = -object.velocity.x;
+    if (circle.position.x - circle.radius < 0 || circle.position.x + circle.radius > window.getSize().x) {
+        circle.position.x = std::clamp (circle.position.x, circle.radius, window.getSize().x - circle.radius);
+        circle.velocity.x = -circle.velocity.x;
     }
 
-    if (object.position.y - object.radius < 0 || object.position.y + object.radius > window.getSize().y) {
-        object.position.y = std::clamp(object.position.y, object.radius, window.getSize().y - object.radius);
-        object.velocity.y = -object.velocity.y;
+    if (circle.position.y - circle.radius < 0 || circle.position.y + circle.radius > window.getSize().y) {
+        circle.position.y = std::clamp(circle.position.y, circle.radius, window.getSize().y - circle.radius);
+        circle.velocity.y = -circle.velocity.y;
     }
 }
 
-void Solver::CircleCollision(Object& a, Object& b)
+void Solver::CircleCollision(Circle& a, Circle& b)
 {
     float dx = b.position.x - a.position.x;
     float dy = b.position.y - a.position.y;
