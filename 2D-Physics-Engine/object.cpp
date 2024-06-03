@@ -1,8 +1,6 @@
-#define OBJECT_H
-#include "./object.h"
+#include "object.h"
 #include <iostream>
 
-float Object::mass = 5.0f;
 float Object::damping = 0.0f;
 Vector2 Object::gravity = Vector2(0, 0);
 float Object::restitution = 1.0f;
@@ -11,8 +9,10 @@ Object::Object(Vector2 pos, Vector2 v)
 	: position(pos), velocity(v) {}
 
 
-void Object::Simulate(float dt)
+void Object::Move(float dt)
 {
+	mass = 5.0f;
+
 	Vector2 force = Vector2(mass * gravity.x, mass * gravity.y);
 
 	velocity.y += force.y * dt;

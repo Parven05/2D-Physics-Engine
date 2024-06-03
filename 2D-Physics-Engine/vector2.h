@@ -1,13 +1,12 @@
-#ifdef VECTOR2_H
-#define VECTOR2_H
-#include <cmath>
-#define _sqrt sqrtf
+#include "cmath"
 
 struct Vector2
 {
 public:
 	float x;
 	float y;
+
+public:
 	Vector2();
 	Vector2(float init_x, float init_y);
 	Vector2 scaleAdd(Vector2 v, float a);
@@ -21,5 +20,3 @@ public:
 	float DotProduct(Vector2 v);
 	Vector2 Normalize();
 };
-
-#endif

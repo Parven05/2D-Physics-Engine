@@ -1,5 +1,4 @@
-#define SOLVER_H
-#include "./solver.h"
+#include "solver.h"
 
 void Solver::WindowCollision(sf::RenderWindow& window, Circle& circle)
 {

@@ -1,4 +1,3 @@
-#define VECTOR2_H
 #include "vector2.h"
 
 Vector2::Vector2(float init_x, float init_y) : x(init_x), y(init_y) {}

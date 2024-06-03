@@ -1,8 +1,5 @@
-#define CIRCLE_H
 #include "circle.h"
 #include <SFML/Graphics.hpp>
-//#include <algorithm>
-
 
 class Solver
 {
