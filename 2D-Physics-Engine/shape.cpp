@@ -1,15 +1,14 @@
-#include "object.h"
+#include "shape.h"
 #include <iostream>
 
-float Object::damping = 0.0f;
-Vector2 Object::gravity = Vector2(0, 0);
-float Object::restitution = 1.0f;
+float Shape::damping = 0.0f;
+Vector2 Shape::gravity = Vector2(0, 0);
+float Shape::restitution = 1.0f;
 
-Object::Object(Vector2 pos, Vector2 v)
+Shape::Shape(Vector2 pos, Vector2 v)
 	: position(pos), velocity(v) {}
 
-
-void Object::Move(float dt)
+void Shape::Move(float dt)
 {
 	mass = 5.0f;
 

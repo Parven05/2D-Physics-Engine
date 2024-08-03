@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 
 // Game Window
@@ -18,7 +19,7 @@ struct RandomRadius
 	float LARGE_RADIUS = static_cast<float>(rand() % (50 - 40 + 1) + 40);
 	float MEDIUM_RADIUS = static_cast<float>(rand() % (30 - 20 + 1) + 20);
 	float SMALL_RADIUS = static_cast<float>(rand() % (20 - 10 + 1) + 10);
-	float EXTRA_SMALL_RADIUS = static_cast<float>(rand() % (10 - 5 + 1) + 5);
+	float EXTRA_SMALL_RADIUS = static_cast<float>(rand() % (5 - 1 + 1) + 1);
 };
 
 // IMGUI

@@ -54,22 +54,22 @@ void Game::RenderImGui()
 
     // Simulation Parameters
     ImGui::Text("Adjust Simulation Parameters");
-    ImGui::SliderFloat("Damping", &Object::damping, range.MIN_DAMPING, range.MAX_DAMPING);
+    ImGui::SliderFloat("Damping", &Shape::damping, range.MIN_DAMPING, range.MAX_DAMPING);
     ImGui::Checkbox("Enable Gravity X", &enableGravityX);
 
     if (enableGravityX) {
-        ImGui::SliderFloat("Gravity X", &Object::gravity.x, range.MIN_GRAVITY_X, range.MAX_GRAVITY_X);
+        ImGui::SliderFloat("Gravity X", &Shape::gravity.x, range.MIN_GRAVITY_X, range.MAX_GRAVITY_X);
     }
 
-    ImGui::SliderFloat("Gravity Y", &Object::gravity.y, range.MIN_GRAVITY_Y, range.MAX_GRAVITY_Y);
-    ImGui::SliderFloat("Restitution", &Object::restitution, range.MIN_RESTITUTION, range.MAX_RESTITUTION);
+    ImGui::SliderFloat("Gravity Y", &Shape::gravity.y, range.MIN_GRAVITY_Y, range.MAX_GRAVITY_Y);
+    ImGui::SliderFloat("Restitution", &Shape::restitution, range.MIN_RESTITUTION, range.MAX_RESTITUTION);
 
     // Adjust total number of balls
-    ImGui::SliderInt("Total Balls", &totalBalls, 2, 100);
+    ImGui::SliderInt("Total Balls", &totalBalls, 2, 10000);
 
     if (ImGui::Button("Reset Simulation"))
     {
-        sandbox.InitializeBalls(totalBalls, random.MEDIUM_RADIUS, *gameWindow);
+        sandbox.InitializeBalls(totalBalls, random.EXTRA_SMALL_RADIUS, *gameWindow);
     }
 
     ImGui::End();
@@ -79,7 +79,7 @@ void Game::Start()
 {
     gameWindow = CreateWindow(window);
     InitializeImGui();
-    sandbox.InitializeBalls(totalBalls, random.MEDIUM_RADIUS, *gameWindow);
+    sandbox.InitializeBalls(totalBalls, random.EXTRA_SMALL_RADIUS, *gameWindow);
 
     while (gameWindow->isOpen())
     {

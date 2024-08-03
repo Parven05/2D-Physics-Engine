@@ -1,8 +1,9 @@
+#pragma once
+
 #include "vector2.h"
 
-class Object
+struct Shape
 {
-public:
 	Vector2 position;
 	Vector2 velocity;
 	float mass;
@@ -10,10 +11,8 @@ public:
 	static Vector2 gravity;
 	static float restitution;
 	
-public:
-	Object(Vector2 pos, Vector2 v);
+	Shape(Vector2 pos, Vector2 v);
 	void Move(float dt);
-
 };
 
 

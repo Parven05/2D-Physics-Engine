@@ -1,3 +1,4 @@
+#pragma once
 #include "sandbox.h"
 #include "config.h"
 

@@ -1,12 +1,10 @@
-#include "cmath"
+#pragma once
 
 struct Vector2
 {
-public:
 	float x;
 	float y;
 
-public:
 	Vector2();
 	Vector2(float init_x, float init_y);
 	Vector2 scaleAdd(Vector2 v, float a);

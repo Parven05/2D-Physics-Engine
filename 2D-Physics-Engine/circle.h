@@ -1,11 +1,10 @@
-#include "object.h"
+#pragma once
+#include "shape.h"
 
-class Circle : public Object
+struct Circle : public Shape
 {
-public:
 	float radius;
 
-public:
 	Circle(float r, Vector2 pos, Vector2 v);
 
 };
